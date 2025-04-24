@@ -2,7 +2,7 @@
   position:relative;
   width: 100%;
   height: 100vh;
-  background: url("D:\VsCode\freelancer-skill-exchange\frontend\src\assets\whatsapp-2025-03-05.jpeg") center/cover no-repeat;
+  background-color:white;
   display: flex;
   align-items: center;
   justify-content: center;
