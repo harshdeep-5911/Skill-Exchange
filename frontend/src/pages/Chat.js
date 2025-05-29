@@ -15,7 +15,7 @@ const Chat = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/users/me", {
+        const { data } = await axios.get("https://skill-exchange-06xf.onrender.com/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCurrentUser(data);
@@ -26,7 +26,7 @@ const Chat = () => {
 
     const fetchChats = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/chat/my-chats", {
+        const { data } = await axios.get("https://skill-exchange-06xf.onrender.com/api/chat/my-chats", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setChats(data);
@@ -48,13 +48,13 @@ const Chat = () => {
   const selectChat = async (chat) => {
     setSelectedChat(chat);
     try {
-      const { data: msgs } = await axios.get(`http://localhost:5000/api/chat/chat/${chat._id}`, {
+      const { data: msgs } = await axios.get(`https://skill-exchange-06xf.onrender.com/api/chat/chat/${chat._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessages(msgs);
 
       const { data: agr } = await axios.get(
-        `http://localhost:5000/api/agreement/check/${chat._id}`,
+        `https://skill-exchange-06xf.onrender.com/api/agreement/check/${chat._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -73,7 +73,7 @@ const Chat = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/chat/send",
+        "https://skill-exchange-06xf.onrender.com/api/chat/send",
         {
           otherUserId: otherUser._id,
           message: newMessage,
@@ -96,7 +96,7 @@ const Chat = () => {
   const handleAgreement = async () => {
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/agreement",
+        "https://skill-exchange-06xf.onrender.com/api/agreement",
         {
           chatId: selectedChat._id,
           userId: currentUser._id,
@@ -115,7 +115,7 @@ const Chat = () => {
     try {
       const otherUser = getOtherUser(selectedChat);
       await axios.post(
-        "http://localhost:5000/api/credits/give",
+        "https://skill-exchange-06xf.onrender.com/api/credits/give",
         {
           toUserId: otherUser._id,
           amount: 50,

@@ -19,7 +19,7 @@ const Dashboard = () => {
 
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/users/profile/${userEmail}`);
+        const { data } = await axios.get(`https://skill-exchange-06xf.onrender.com/api/users/profile/${userEmail}`);
         setProfile(data);
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -29,7 +29,7 @@ const Dashboard = () => {
 
     const fetchCredit = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/credits/my", {
+        const { data } = await axios.get("https://skill-exchange-06xf.onrender.com/api/credits/my", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCredit(data.totalCredits);

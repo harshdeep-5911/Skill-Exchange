@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://skill-exchange-06xf.onrender.com");
 
 const Profile = () => {
   const [formData, setFormData] = useState({
@@ -40,7 +40,7 @@ const Profile = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:5000/api/service-requests/my-requests",
+          "https://skill-exchange-06xf.onrender.com/api/service-requests/my-requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ const Profile = () => {
 
   const handleSendOTP = async () => {
     try {
-      await axios.post("http://localhost:5000/api/users/send-otp", {
+      await axios.post("https://skill-exchange-06xf.onrender.com/api/users/send-otp", {
         email: formData.email,
       });
       setOtpSent(true);
@@ -99,7 +99,7 @@ const Profile = () => {
       }
 
       await axios.post(
-        "http://localhost:5000/api/users/create-profile",
+        "https://skill-exchange-06xf.onrender.com/api/users/create-profile",
         formDataToSend,
         {
           headers: {
@@ -128,7 +128,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/service-requests/accept",
+        "https://skill-exchange-06xf.onrender.com/api/service-requests/accept",
         { requestId },
         {
           headers: {

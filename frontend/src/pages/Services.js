@@ -18,7 +18,7 @@ const Services = () => {
         }
 
         const { data } = await axios.get(
-          "http://localhost:5000/api/service-requests/my-requests",
+          "https://skill-exchange-06xf.onrender.com/api/service-requests/my-requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const Services = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/service-requests/accept",
+        "https://skill-exchange-06xf.onrender.com/api/service-requests/accept",
         { requestId },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -75,7 +75,7 @@ const Services = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/service-requests/decline",
+        "https://skill-exchange-06xf.onrender.com/api/service-requests/decline",
         { requestId },
         {
           headers: { Authorization: `Bearer ${token}` },

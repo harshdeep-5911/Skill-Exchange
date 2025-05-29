@@ -8,7 +8,7 @@ const Chat = ({ otherUserEmail }) => {
 
   useEffect(() => {
     const loadChat = async () => {
-      const { data } = await axios.post("http://localhost:5000/api/chat/get-or-create", 
+      const { data } = await axios.post("https://skill-exchange-06xf.onrender.com/api/chat/get-or-create", 
         { otherUserEmail },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
@@ -19,7 +19,7 @@ const Chat = ({ otherUserEmail }) => {
 
   const sendMessage = async () => {
     if (!newMsg) return;
-    const { data } = await axios.post("http://localhost:5000/api/chat/send", 
+    const { data } = await axios.post("https://skill-exchange-06xf.onrender.com/api/chat/send", 
       { otherUserEmail, message: newMsg },
       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
     );

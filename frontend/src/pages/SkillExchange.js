@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import io from "socket.io-client";
 import "./SkillExchange.css";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://skill-exchange-06xf.onrender.com");
 
 const SkillExchange = () => {
   const [profiles, setProfiles] = useState([]);
@@ -30,7 +30,7 @@ const SkillExchange = () => {
       const email = localStorage.getItem("userEmail");
       setUserEmail(email);
 
-      const { data } = await axios.get("http://localhost:5000/api/users/all", {
+      const { data } = await axios.get("https://skill-exchange-06xf.onrender.com/api/users/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -175,7 +175,7 @@ const SkillExchange = () => {
                         console.log("Sending request with token:", token); // debug
 
                         await axios.post(
-                          "http://localhost:5000/api/service-requests/send",
+                          "https://skill-exchange-06xf.onrender.com/api/service-requests/send",
                           {
                             toEmail: user.email,
                             serviceDetails: `Interested in ${user.skills.join(", ")}`,

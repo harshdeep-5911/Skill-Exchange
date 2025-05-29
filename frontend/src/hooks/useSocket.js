@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import io from "socket.io-client";
 
-const socketUrl = "http://localhost:5000";
+const socketUrl = "https://skill-exchange-06xf.onrender.com";
 
 export const useSocket = () => {
   const [socket, setSocket] = useState(null);
