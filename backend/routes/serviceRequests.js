@@ -7,7 +7,6 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-// ✅ Send a service request
 router.post("/send", protect, async (req, res) => {
   try {
     const { toEmail, serviceDetails } = req.body;
@@ -17,7 +16,6 @@ router.post("/send", protect, async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Find users by email to get their ObjectId
     const fromUser = await User.findOne({ email: fromEmail });
     const toUser = await User.findOne({ email: toEmail });
 
@@ -26,8 +24,8 @@ router.post("/send", protect, async (req, res) => {
     }
 
     const newRequest = new ServiceRequest({
-      fromUser: fromUser._id, // Use ObjectId for fromUser
-      toUser: toUser._id,     // Use ObjectId for toUser
+      fromUser: fromUser._id, 
+      toUser: toUser._id,     
       serviceDetails,
     });
     await newRequest.save();
@@ -40,8 +38,6 @@ router.post("/send", protect, async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
-
-// ✅ Get current user's received service requests
 router.get("/my-requests", async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Get token from headers
@@ -50,7 +46,6 @@ router.get("/my-requests", async (req, res) => {
       return res.status(401).json({ message: "No token provided" });
     }
 
-    // Decode the token and find the user
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
@@ -58,15 +53,13 @@ router.get("/my-requests", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Ensure the correct user-related service requests are fetched
     const serviceRequests = await ServiceRequest.find({
-      $or: [{ fromUser: user._id }, { toUser: user._id }],  // Match based on ObjectId
+      $or: [{ fromUser: user._id }, { toUser: user._id }],  
     })
-      .populate("fromUser toUser");  // Populate the 'fromUser' and 'toUser' fields with user data
+      .populate("fromUser toUser"); 
 
-    // Format the response to include name and skills of the users
     const response = serviceRequests.map(request => ({
-      ...request.toObject(), // Convert the request document to a plain object
+      ...request.toObject(), 
       fromUser: {
         name: request.fromUser.name,
         skills: request.fromUser.skills,
@@ -84,7 +77,6 @@ router.get("/my-requests", async (req, res) => {
   }
 });
 
-// ✅ Accept a service request and create chat
 router.post("/accept", async (req, res) => {
   const { requestId } = req.body;
   try {
@@ -96,7 +88,6 @@ router.post("/accept", async (req, res) => {
     serviceRequest.status = "accepted";
     await serviceRequest.save();
 
-    // Create chat or fetch existing chat
     let chat = await Chat.findOne({
       participants: { $all: [serviceRequest.fromUser._id, serviceRequest.toUser._id] },
     });
@@ -115,7 +106,6 @@ router.post("/accept", async (req, res) => {
   }
 });
 
-// ✅ Decline a service request
 router.post("/decline", protect, async (req, res) => {
   try {
     const { requestId } = req.body;

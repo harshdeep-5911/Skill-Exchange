@@ -50,7 +50,7 @@ const Chat = ({ otherUserEmail }) => {
       />
       <button onClick={sendMessage}>Send</button>
 
-      {/* Agreement Button */}
+      {}
       <div style={{ marginTop: "20px" }}>
         {!agreementAccepted && (
           <button onClick={handleAgreement} style={{ padding: "10px", backgroundColor: "#4CAF50", color: "white", border: "none", borderRadius: "5px" }}>

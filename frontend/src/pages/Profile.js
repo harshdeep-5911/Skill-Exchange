@@ -228,9 +228,9 @@ const Profile = () => {
         )}
       </form>
 
-      {/* ▼ Service Request Section ▼ */}
+      {}
       <div className="service-requests">
-        <h3>Incoming Service Requests</h3>
+        <h3>Request History </h3>
         {requests.length === 0 ? (
           <p>No service requests found.</p>
         ) : (

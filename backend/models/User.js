@@ -12,6 +12,10 @@ const UserSchema = new mongoose.Schema({
   verified: { type: Boolean, default: false },
   otp: { type: String },
   otpExpires: { type: Date },
+  credits: {
+    type: Number,
+    default: 0,
+  },
 }, { timestamps: true });
 
 UserSchema.index({ skills: 1 });

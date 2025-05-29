@@ -2,7 +2,7 @@ import User from "../models/userModel.js";
 import cloudinary from "cloudinary";
 import fs from "fs";
 
-// Cloudinary config
+
 
 cloudinary.config({
   cloud_name: "dys69csxg",
@@ -11,7 +11,6 @@ cloudinary.config({
 });
 
 
-// ✅ Controller to get all verified users
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({ verified: true }); // ✅ Only verified users
@@ -22,8 +21,6 @@ export const getAllUsers = async (req, res) => {
 };
 
 
-
-// Existing createProfile if used elsewhere
 export const createProfile = async (req, res) => {
   try {
     const userId = req.user.userId;

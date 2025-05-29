@@ -9,7 +9,7 @@ import Chat from "./pages/Chat";
 import Dashboard from "./pages/Dashboard";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import { useSocket } from "./hooks/useSocket"; // Custom hook for socket connection
+import { useSocket } from "./hooks/useSocket"; 
 
 const App = () => {
   const socket = useSocket();
@@ -17,7 +17,6 @@ const App = () => {
 
   useEffect(() => {
     if (socket) {
-      // Socket is ready
       setIsSocketReady(true);
 
       socket.on("openChat", ({ user1, user2 }) => {
@@ -34,7 +33,6 @@ const App = () => {
         }
       });
 
-      // Cleanup
       return () => {
         socket.off("openChat");
         socket.off("newServiceRequestNotification");
@@ -43,7 +41,7 @@ const App = () => {
   }, [socket]);
 
   if (!isSocketReady) {
-    return <div>Loading...</div>; // Render loading state until socket is ready
+    return <div>Loading...</div>; 
   }
 
   return (

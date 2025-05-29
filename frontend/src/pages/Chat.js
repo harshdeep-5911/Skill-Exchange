@@ -7,79 +7,69 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
-  const [agreementAccepted, setAgreementAccepted] = useState(false);
+  const [agreement, setAgreement] = useState(null);
 
   const token = localStorage.getItem("token");
+  const fallbackImageUrl = "https://www.example.com/default-profile-pic.jpg";
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!token) {
-        console.error("Token is missing");
-        return;
-      }
-
       try {
         const { data } = await axios.get("http://localhost:5000/api/users/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setCurrentUser(data);
       } catch (err) {
-        console.error("Error fetching current user:", err.response?.data || err.message);
+        console.error("Error fetching current user:", err);
       }
     };
 
     const fetchChats = async () => {
-      if (!token) {
-        console.error("Token is missing");
-        return;
-      }
-
       try {
         const { data } = await axios.get("http://localhost:5000/api/chat/my-chats", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
         setChats(data);
-      } catch (error) {
-        console.error("Error fetching chats:", error.response?.data || error.message);
+      } catch (err) {
+        console.error("Error fetching chats:", err);
       }
     };
 
-    fetchUser();
-    fetchChats();
+    if (token) {
+      fetchUser();
+      fetchChats();
+    }
   }, [token]);
+
+  const getOtherUser = (chat) => {
+    return chat?.participants?.find((user) => user._id !== currentUser?._id);
+  };
 
   const selectChat = async (chat) => {
     setSelectedChat(chat);
-
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/chat/messages/${chat._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const { data: msgs } = await axios.get(`http://localhost:5000/api/chat/chat/${chat._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      setMessages(msgs);
 
-      setMessages(data);
-    } catch (error) {
-      console.error("Error fetching messages:", error.response?.data || error.message);
+      const { data: agr } = await axios.get(
+        `http://localhost:5000/api/agreement/check/${chat._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setAgreement(agr);
+    } catch (err) {
+      console.error("Error fetching chat or agreement:", err);
+      setAgreement(null);
     }
   };
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedChat || !currentUser) return;
-
-    const otherUser = selectedChat.participants.find(
-      (user) => user._id !== currentUser._id
-    );
-
-    if (!otherUser) {
-      console.error("Could not identify the other user in the chat.");
-      return;
-    }
+    const otherUser = getOtherUser(selectedChat);
+    if (!otherUser) return;
 
     try {
       const { data } = await axios.post(
@@ -89,38 +79,66 @@ const Chat = () => {
           message: newMessage,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      setMessages((prev) => [...prev, data.messages.at(-1)]);
+      setMessages((prev) => [...prev, data.newMessage]);
       setNewMessage("");
-    } catch (error) {
-      console.error("Error sending message:", error.response?.data || error.message);
+    } catch (err) {
+      console.error("Error sending message:", err);
     }
   };
 
-  const getOtherUser = (chat) => {
-    if (!chat || !chat.participants || !currentUser) return null;
-    return chat.participants.find((user) => user._id !== currentUser._id);
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") sendMessage();
   };
 
-  const handleAgreement = () => {
-    setAgreementAccepted(true);
-    console.log("Agreement Accepted");
+  const handleAgreement = async () => {
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/agreement",
+        {
+          chatId: selectedChat._id,
+          userId: currentUser._id,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setAgreement(data);
+    } catch (err) {
+      console.error("Agreement error:", err);
+    }
   };
 
-  const fallbackImageUrl = "https://www.example.com/default-profile-pic.jpg";
+  const giveCredit = async () => {
+    try {
+      const otherUser = getOtherUser(selectedChat);
+      await axios.post(
+        "http://localhost:5000/api/credits/give",
+        {
+          toUserId: otherUser._id,
+          amount: 50,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      alert("50 Skill Credits Given Successfully!");
+    } catch (err) {
+      console.error("Error giving credit:", err);
+    }
+  };
+
+  const bothAgreed = agreement?.user1Agreed && agreement?.user2Agreed;
 
   return (
     <div className="chat-container" style={{ display: "flex", height: "80vh" }}>
+      {/* Chat List */}
       <div style={{ width: "30%", borderRight: "1px solid #ccc", overflowY: "auto" }}>
         <h3 style={{ padding: "10px" }}>Chats</h3>
         {chats.map((chat) => {
           const otherUser = getOtherUser(chat);
-
           return (
             <div
               key={chat._id}
@@ -134,14 +152,9 @@ const Chat = () => {
               }}
             >
               <img
-                src={otherUser?.profilePic || fallbackImageUrl}
+                src={otherUser?.profilePicture || fallbackImageUrl}
                 alt="profile"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  marginRight: "10px",
-                }}
+                style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px" }}
               />
               <span>{otherUser?.name || otherUser?.email || "User"}</span>
             </div>
@@ -149,26 +162,36 @@ const Chat = () => {
         })}
       </div>
 
+      {/* Chat View */}
       <div style={{ width: "70%", padding: "20px", display: "flex", flexDirection: "column" }}>
         {selectedChat ? (
           <>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
-              <img
-                src={getOtherUser(selectedChat)?.profilePic || fallbackImageUrl}
-                alt="profile"
-                style={{
-                  width: "35px",
-                  height: "35px",
-                  borderRadius: "50%",
-                  marginRight: "10px",
-                }}
-              />
-              <h3 style={{ margin: 0 }}>
-                {getOtherUser(selectedChat)?.name ||
-                  getOtherUser(selectedChat)?.email ||
-                  "User"}
-              </h3>
-            </div>
+            {(() => {
+              const selectedOtherUser = getOtherUser(selectedChat);
+              return (
+                <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                  <img
+                    src={selectedOtherUser?.profilePicture || fallbackImageUrl}
+                    alt="profile"
+                    style={{ width: "35px", height: "35px", borderRadius: "50%", marginRight: "10px" }}
+                  />
+                  <h3 style={{ margin: 0 }}>{selectedOtherUser?.name || "User"}</h3>
+                </div>
+              );
+            })()}
+
+            {agreement && (
+              <div style={{ marginBottom: "10px", background: "#f0f0f0", padding: "10px", borderRadius: "8px" }}>
+                <p>
+                  <strong>Agreement:</strong>{" "}
+                  {bothAgreed ? (
+                    <span style={{ color: "green" }}>Both Agreed ✅</span>
+                  ) : (
+                    <span style={{ color: "orange" }}>Pending Agreement ⏳</span>
+                  )}
+                </p>
+              </div>
+            )}
 
             <div
               style={{
@@ -179,12 +202,31 @@ const Chat = () => {
                 overflowY: "auto",
               }}
             >
-              {messages.map((msg, idx) => (
-                <div key={idx} style={{ marginBottom: "10px" }}>
-                  <strong>{msg.sender === currentUser?.email ? "You" : "Them"}:</strong>{" "}
-                  {msg.content}
-                </div>
-              ))}
+              {messages.length === 0 ? (
+                <p style={{ color: "#999" }}>No messages yet. Say hi!</p>
+              ) : (
+                messages.map((msg, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      textAlign: msg.sender._id === currentUser._id ? "right" : "left",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "inline-block",
+                        padding: "8px 12px",
+                        borderRadius: "15px",
+                        backgroundColor: msg.sender._id === currentUser._id ? "#dcf8c6" : "#f1f0f0",
+                      }}
+                    >
+                      <strong>{msg.sender.name}</strong>
+                      <div>{msg.content}</div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             <div style={{ display: "flex", marginTop: "10px" }}>
@@ -192,24 +234,29 @@ const Chat = () => {
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type your message"
-                style={{ flex: 1, marginRight: "10px", padding: "8px" }}
+                onKeyDown={handleKeyDown}
+                placeholder="Type a message..."
+                style={{ flex: 1, padding: "10px" }}
               />
-              <button onClick={sendMessage}>Send</button>
+              <button onClick={sendMessage} style={{ padding: "10px 15px" }}>
+                Send
+              </button>
             </div>
 
-            {/* Agreement Button */}
-            <div style={{ marginTop: "20px" }}>
-              {!agreementAccepted && (
-                <button onClick={handleAgreement} style={{ padding: "10px", backgroundColor: "#4CAF50", color: "white", border: "none", borderRadius: "5px" }}>
-                  Agree to Terms
+            <div style={{ marginTop: "10px" }}>
+              {bothAgreed ? (
+                <button onClick={giveCredit} style={{ backgroundColor: "green", color: "white", padding: "10px" }}>
+                  Give Credit
+                </button>
+              ) : (
+                <button onClick={handleAgreement} style={{ backgroundColor: "#007bff", color: "white", padding: "10px" }}>
+                  Agree to Work
                 </button>
               )}
-              {agreementAccepted && <p>Agreement Accepted</p>}
             </div>
           </>
         ) : (
-          <p>Select a chat to start messaging</p>
+          <h4 style={{ color: "#777" }}>Select a chat to start messaging</h4>
         )}
       </div>
     </div>

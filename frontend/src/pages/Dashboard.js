@@ -5,9 +5,11 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null);
+  const [credit, setCredit] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const userEmail = localStorage.getItem("userEmail");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!userEmail) {
@@ -17,9 +19,7 @@ const Dashboard = () => {
 
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.get(
-          `http://localhost:5000/api/users/profile/${userEmail}`
-        );
+        const { data } = await axios.get(`http://localhost:5000/api/users/profile/${userEmail}`);
         setProfile(data);
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -27,11 +27,23 @@ const Dashboard = () => {
       }
     };
 
+    const fetchCredit = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:5000/api/credits/my", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCredit(data.totalCredits);
+      } catch (err) {
+        console.error("Error fetching credit:", err);
+      }
+    };
+
     fetchProfile();
-  }, [userEmail, navigate]);
+    fetchCredit();
+  }, [userEmail, navigate, token]);
 
   const handleEdit = () => {
-    navigate("/profile"); // This should lead to the profile page with form
+    navigate("/profile");
   };
 
   return (
@@ -40,20 +52,13 @@ const Dashboard = () => {
       {error && <p className="error">{error}</p>}
       {profile ? (
         <div className="profile-card">
-          <img
-            src={profile.portfolio || "default-avatar.png"}
-            alt="Profile"
-            className="profile-avatar"
-          />
+          <img src={profile.portfolio || "default-avatar.png"} alt="Profile" className="profile-avatar" />
           <h3>{profile.name}</h3>
           <p>Email: {profile.email}</p>
           <p>Skills: {profile.skills.join(", ")}</p>
           <p>Experience: {profile.experience} years</p>
-
-          <button
-            onClick={handleEdit}
-            className="edit-button"
-          >
+          <p><strong>Total Skill Credits:</strong> {credit ?? "Loading..."}</p>
+          <button onClick={handleEdit} className="edit-button">
             Edit Profile
           </button>
         </div>
