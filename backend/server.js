@@ -102,9 +102,10 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://skill-exchange-skf8.vercel.app", 
+  "https://skill-exchange-skf8.vercel.app",
 ];
 
 const io = new Server(server, {
@@ -128,7 +129,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/match", matchRoutes);
@@ -152,6 +152,7 @@ mongoose
     process.exit(1);
   });
 
+// Socket.IO events
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
@@ -185,11 +186,7 @@ app.use((error, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () =>
-  console.log(`Server running on port ${PORT}`)
-);
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
-);
