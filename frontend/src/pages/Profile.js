@@ -13,7 +13,7 @@ const Profile = () => {
     skills: "",
     experience: "",
     portfolio: null,
-    profilePicture: null,
+    //profilePicture: null,
     otp: "",
   });
 
@@ -63,7 +63,7 @@ const Profile = () => {
 
   const handleFileChange = (e) => {
     setFormData({ ...formData, portfolio: e.target.files[0] });
-    setFormData({ ...formData, profilePicture: e.target.files[0] });
+   // setFormData({ ...formData, profilePicture: e.target.files[0] });
   };
 
   const handleSendOTP = async () => {
@@ -90,7 +90,7 @@ const Profile = () => {
     formDataToSend.append("skills", formData.skills);
     formDataToSend.append("experience", formData.experience);
     formDataToSend.append("portfolio", formData.portfolio);
-    formDataToSend.append("profilePicture", formData.profilePicture);
+   // formDataToSend.append("profilePicture", formData.profilePicture);
     formDataToSend.append("otp", formData.otp);
 
     try {
@@ -210,7 +210,7 @@ const Profile = () => {
             required
             className="file-input"
           />
-              <label>Profile Picture</label>
+             /* <label>Profile Picture</label>
               <input
               type="file"
               name="profilePicture"
@@ -218,7 +218,7 @@ const Profile = () => {
               onChange={handleFileChange}
               required
               className="file-input"
-               />
+               />*/
         </div>
 
         {!otpSent ? (
