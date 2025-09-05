@@ -1,4 +1,4 @@
-.navbar {
+/* .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -50,4 +50,172 @@
 
 .logout-btn:hover {
   color: #fca311;
+}
+ */
+/* Modern & Responsive Navbar Styles - UPDATED */
+
+/* 1. Theme variables with your requested changes */
+:root {
+  --primary-color: #4A55E0;
+  --primary-hover: #404AC8;
+  --accent-color: #F97316; /* New vibrant orange for active states */
+  --dark-bg: #2d3748; 
+  --text-light: #f7fafc;
+  /*--border-radius-md: 10px; /* Increased border radius for a softer look */
+}
+
+/* 2. Main Navbar Styling */
+.navbar {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-color: var(--dark-bg);
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 24px;
+}
+
+.navbar-logo img {
+  height: 40px;
+  transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover img {
+    transform: scale(1.05);
+}
+
+/* 3. Navigation Links */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  text-align: center;
+  gap: 1rem;
+}
+
+.nav-item {
+  height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  opacity: 0.8;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.nav-link:hover {
+  opacity: 1;
+  color: white;
+}
+
+/* UPDATED: Style for the currently active page link is now orange */
+.nav-link.active {
+  color: var(--accent-color);
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* 4. Authentication Buttons */
+.nav-auth {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn {
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--border-radius-md);
+  border: 1px solid transparent; /* Set a transparent base border */
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.btn-primary-nav {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary-nav:hover {
+  background-color: var(--primary-hover);
+}
+
+/* UPDATED: Secondary button now has an orange border and text */
+.btn-secondary-nav {
+  background-color: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+
+.btn-secondary-nav:hover {
+  background-color: rgba(249, 115, 22, 0.1); /* Faint orange glow on hover */
+  color: var(--accent-color);
+}
+
+/* 5. Mobile Menu & Responsiveness */
+.menu-icon {
+  display: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: white;
+}
+
+@media screen and (max-width: 960px) {
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100vh - 80px);
+    position: absolute;
+    top: 80px;
+    left: -100%;
+    opacity: 1;
+    transition: all 0.5s ease;
+    background: var(--dark-bg);
+    padding-top: 2rem;
+    gap: 1.5rem;
+  }
+
+  .nav-menu.active {
+    left: 0;
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .nav-item {
+      height: auto;
+  }
+
+  .nav-link {
+    font-size: 1.25rem;
+  }
+  
+  .nav-auth {
+    display: none;
+  }
+
+  .menu-icon {
+    display: block;
+  }
 }
